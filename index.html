@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tetris</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/6.5.0-rc.2/browser/pixi.js"></script>
+    <script src="./pixijs-grid.js"></script>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+    <h1>Tetris</h1>
+    <script>
+        let app = new PIXI.Application({
+            width: 300,
+            height: 600
+        });
+        document.body.appendChild(app.view);
+
+        let grid = new PixiJSGrid(600);
+        grid.drawBoundaries = false;
+        grid.cellSize = 30;
+        grid.drawGrid();
+        app.stage.addChild(grid);
+        let gridMap = new Array(12);
+        for (let i = 0; i < 22; i++) {
+            gridMap[i] = new Array(11).fill(0);
+            gridMap[i][0] = 1;
+            gridMap[i][10] = 1;
+        }
+
+        for (let j = 0; j < 10; j++) {
+            gridMap[0][j] = 1;
+            gridMap[21][j] = 1;
+        }
+
+        console.table(gridMap);
+
+
+        let tMino = new PIXI.Graphics();
+        tMino.interactive = true;
+        tMino.pivot.x = 45;
+        tMino.pivot.y = 45;
+        tMino.beginFill(0xAA00FF, 1);
+        tMino.lineStyle(0);
+        tMino.moveTo(30, 0);
+        tMino.lineTo(60, 0);
+        tMino.lineTo(60, 30);
+        tMino.lineTo(90, 30);
+        tMino.lineTo(90, 60);
+        tMino.lineTo(0, 60);
+        tMino.lineTo(0, 30);
+        tMino.lineTo(30, 30);
+        tMino.closePath();
+        tMino.endFill();
+
+        let iMino = new PIXI.Graphics();
+        iMino.pivot.x = 60;
+        iMino.pivot.y = 30;
+        iMino.beginFill(0x00FFFF);
+        iMino.drawRect(0, 0, 120, 30);
+        iMino.endFill();
+
+        app.stage.addChild(tMino);
+        tMino.x = 135;
+        tMino.y = 45;
+
+        app.stage.addChild(iMino);
+        iMino.x = 150;
+        iMino.y = 540;
+        iMino.angle = 270;
+        gridMap[17][4] = gridMap[18][4] = gridMap[19][4] = gridMap[20][4] = 1;
+        console.table(gridMap);
+
+        document.addEventListener('keyup', onKeyUp);
+
+        function onKeyUp(key) {
+            if (key.keyCode == 38) {
+                if (tMino.angle % 360 == 0) {
+                    if (gridMap[(tMino.y + 15) / 30 + 1][(tMino.x - 15) / 30] == 1 && gridMap[(tMino.y + 15) / 30 + 1][(tMino.x - 15) / 30 - 1] == 0 && gridMap[(tMino.y + 15) / 30 - 1][(tMino.x + 15) / 30 - 1] == 0) {
+                        tMino.x -= 30;
+                    }
+                }
+                tMino.angle += 90;
+            } else if (key.keyCode === 90) {
+                if (gridMap[(tMino.y - 15) / 30][(tMino.x + 15) / 30] == 1) {
+                    tMino.x -= 30;
+                } else if (gridMap[(tMino.y - 15) / 30][(tMino.x - 15) / 30] == 1) {
+                    tMino.x += 30;
+                } else if (gridMap[(tMino.y - 15) / 30 + 2][(tMino.x - 15) / 30] == 1) {
+                    tMino.y -= 30;
+                }
+                tMino.angle -= 90;
+            }
+        }
+
+        var keys = [];
+
+        document.addEventListener("keydown",
+            function(e) {
+                keys[e.keyCode] = e.keyCode;
+                if (getNumberArray(keys) == 37) {
+                    if (tMino.angle % 360 == 180 || tMino.angle % 360 == -180 || tMino.angle % 360 == 0 || tMino.angle % 360 == -90 || tMino.angle % 360 == 270) {
+                        if (gridMap[(tMino.y - 15) / 30][(tMino.x - 15) / 30 - 1] == 0) {
+                            tMino.x -= 30;
+                        }
+                    } else if (tMino.angle % 360 == 90 || tMino.angle % 360 == -270) {
+                        if (gridMap[(tMino.y - 15) / 30][(tMino.x - 15) / 30] == 0) {
+                            tMino.x -= 30;
+                        }
+                    }
+                } else if (getNumberArray(keys) == 39) {
+                    if (tMino.angle % 360 == 180 || tMino.angle % 360 == -180 || tMino.angle % 360 == 0 || tMino.angle % 360 == 90 || tMino.angle % 360 == -270) {
+                        if (gridMap[(tMino.y - 15) / 30][(tMino.x + 15) / 30 + 1] == 0) {
+                            tMino.x += 30;
+                        }
+                    } else if (tMino.angle % 360 == -90 || tMino.angle % 360 == 270) {
+                        if (gridMap[(tMino.y - 15) / 30][(tMino.x + 15) / 30] == 0) {
+                            tMino.x += 30;
+                        }
+                    }
+                } else if (getNumberArray(keys) == 40) {
+                    tMino.y += 30;
+                }
+            },
+            false);
+
+        document.addEventListener('keyup',
+            function(e) {
+                keys[e.keyCode] = false;
+            },
+            false);
+
+        function getNumberArray(arr) {
+            var newArr = new Array();
+            for (var i = 0; i < arr.length; i++) {
+                if (typeof arr[i] == "number") {
+                    newArr[newArr.length] = arr[i];
+                }
+            }
+            return newArr;
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/6.5.0-rc.2/browser/pixi.js"></script>
+    <script src="./pixijs-grid.js"></script>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+
+    <h1 text-align="center">Tetris</h1>
+    <script>
+        let app = new PIXI.Application({
+            width: 300,
+            height: 600
+        });
+
+        document.body.appendChild(app.view);
+
+        let minos = new PIXI.Application({
+            width: 300,
+            height: 600
+        });
+
+        document.body.appendChild(minos.view);
+
+        let tMino = new PIXI.Graphics();
+        tMino.pivot.x = 45;
+        tMino.pivot.y = 45;
+        tMino.beginFill(0xAA00FF, 1);
+        tMino.lineStyle(0);
+        tMino.moveTo(30, 0);
+        tMino.lineTo(60, 0);
+        tMino.lineTo(60, 30);
+        tMino.lineTo(90, 30);
+        tMino.lineTo(90, 60);
+        tMino.lineTo(0, 60);
+        tMino.lineTo(0, 30);
+        tMino.lineTo(30, 30);
+        tMino.closePath();
+        tMino.endFill();
+
+        let jMino = new PIXI.Graphics();
+        jMino.beginFill(0x0000FF);
+        jMino.lineStyle(0);
+        jMino.moveTo(0, 0);
+        jMino.lineTo(0, 60);
+        jMino.lineTo(90, 60);
+        jMino.lineTo(90, 30);
+        jMino.lineTo(30, 30);
+        jMino.lineTo(30, 0);
+        jMino.closePath();
+        jMino.endFill();
+
+        let lMino = new PIXI.Graphics();
+        lMino.beginFill(0xFF8C00);
+        lMino.lineStyle(0);
+        lMino.moveTo(90, 0);
+        lMino.lineTo(60, 0);
+        lMino.lineTo(60, 30);
+        lMino.lineTo(0, 30);
+        lMino.lineTo(0, 60);
+        lMino.lineTo(90, 60);
+        lMino.closePath();
+        lMino.endFill();
+
+        let zMino = new PIXI.Graphics();
+        zMino.beginFill(0xFF0000);
+        zMino.lineStyle(0);
+        zMino.moveTo(0, 0);
+        zMino.lineTo(60, 0);
+        zMino.lineTo(60, 30);
+        zMino.lineTo(90, 30);
+        zMino.lineTo(90, 60);
+        zMino.lineTo(60, 60);
+        zMino.lineTo(30, 60);
+        zMino.lineTo(30, 30);
+        zMino.lineTo(0, 30);
+        zMino.closePath();
+        zMino.endFill();
+
+        let iMino = new PIXI.Graphics();
+        iMino.beginFill(0x00FFFF);
+        iMino.drawRect(0, 0, 120, 30);
+        iMino.endFill();
+
+        let sMino = new PIXI.Graphics();
+        sMino.beginFill(0x00FF00);
+        sMino.lineStyle(0);
+        sMino.moveTo(90, 0);
+        sMino.lineTo(30, 0);
+        sMino.lineTo(30, 30);
+        sMino.lineTo(0, 30);
+        sMino.lineTo(0, 60);
+        sMino.lineTo(60, 60);
+        sMino.lineTo(60, 30);
+        sMino.lineTo(90, 30);
+        sMino.closePath();
+        sMino.endFill();
+
+        let oMino = new PIXI.Graphics();
+        oMino.beginFill(0xFFFF00);
+        oMino.drawRect(0, 0, 60, 60);
+        oMino.endFill();
+
+
+        app.stage.addChild(tMino);
+        tMino.x = 135;
+        tMino.y = 45;
+
+        minos.stage.addChild(sMino);
+        sMino.x = 30;
+        sMino.y = 120;
+
+        minos.stage.addChild(zMino);
+        zMino.x = 30;
+        zMino.y = 210;
+
+        minos.stage.addChild(iMino);
+        iMino.x = 30;
+        iMino.y = 300;
+
+        minos.stage.addChild(lMino);
+        lMino.x = 30;
+        lMino.y = 390;
+
+        minos.stage.addChild(jMino);
+        jMino.x = 30;
+        jMino.y = 480;
+
+        minos.stage.addChild(oMino);
+        oMino.x = 180;
+        oMino.y = 30;
+
+        let grid = new PixiJSGrid(600);
+        grid.drawBoundaries = false;
+        grid.cellSize = 30;
+        grid.drawGrid();
+        app.stage.addChild(grid);
+
+        tMino.interactive = true;
+
+        document.addEventListener('keydown', onKeyDown);
+
+        function onKeyDown(key) {
+            if (key.keyCode === 38) {
+                if (tMino.x >= 285) {
+                    tMino.x -= 30;
+                } else if (tMino.y >= 585) {
+                    if (tMino.x >= 255) {
+                        tMino.x -= 30;
+                    }
+                    tMino.y -= 30;
+                } else if (tMino.x <= 15) {
+                    tMino.x += 30;
+                }
+                tMino.angle += 90;
+
+            } else if (key.keyCode === 90) {
+                if (tMino.x <= 15) {
+                    tMino.x += 30;
+                } else if (tMino.y >= 585) {
+                    if (tMino.x <= 45) {
+                        tMino.x += 30;
+                        tMino.y -= 30;
+                    } else {
+                        tMino.y -= 30;
+                    }
+                }
+                tMino.angle -= 90;
+            } else if (key.keyCode === 37) {
+                if (tMino.angle % 360 == 90 || tMino.angle % 360 == -270) {
+                    if (tMino.x >= 45) {
+                        tMino.x -= 30;
+                    }
+                } else if (tMino.x >= 75) {
+                    tMino.x -= 30;
+                }
+            } else if (key.keyCode === 39) {
+                if (tMino.angle % 360 == 270 || tMino.angle % 360 == -90) {
+                    if (tMino.x <= 255) {
+                        tMino.x += 30;
+                    }
+                } else {
+                    if (tMino.x <= 225) {
+                        tMino.x += 30;
+                    }
+                }
+
+            } else if (key.keyCode === 40) {
+                if (tMino.y <= 570) {
+                    tMino.y += 30;
+                }
+            }
+        }
+    </script>
+
+</body>
+
+</html>
